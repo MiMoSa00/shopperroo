@@ -1,5 +1,5 @@
 import { Product } from "@/sanity.types";
-import { imageUrl } from "@/sanity/lib/imageUrl";
+import { imageUrl } from "@/lib/imageUrl";
 import Image from "next/image";
 import Link from "next/link";
 

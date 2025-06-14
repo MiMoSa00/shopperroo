@@ -117,12 +117,14 @@ fields: [
                 { title: "Cancelled", value: "cancelled" },
             ],
         },
+        initialValue: "pending",
     }),
     defineField ({
         name: "orderDate",
         title: "Order Date",
         type: "datetime",
         validation: (Rule) => Rule.required(),
+        initialValue: () => new Date().toISOString(),
     }),
 ],
 preview: {
@@ -134,7 +136,7 @@ preview: {
         email: "email",
     },
     prepare(select) {
-        const orderIdSnippet = `${select.orderId.slice(0, 5)}...${select.orderId.slice(-5)}`;
+        const orderIdSnippet = select.orderId ?  `${select.orderId.slice(0, 5)}...${select.orderId.slice(-5)}` : "N/A";
         return {
             title: `${select.name} (${orderIdSnippet})`,
             subtitle: `${select.amount} ${select.currency}, ${select.email}`,

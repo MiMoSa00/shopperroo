@@ -5,7 +5,7 @@ import {    apiVersion, dataset, projectId } from '../env';
 
 export const backendClient = createClient({
     projectId,
-    dataset,
+    dataset: "production",
     apiVersion,
     useCdn: true, // Set to false if statically generating pages, using ISR or tag-based revalidation
     token: process.env.SANITY_API_TOKEN
