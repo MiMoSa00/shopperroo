@@ -3,6 +3,8 @@
 import { imageUrl } from "@/lib/imageUrl";
 import stripe from "@/lib/stripe";
 import { BasketItem } from "@/store/store";
+import { v4 as uuidv4 } from 'uuid'; // Import UUID for unique keys
+import sanityClient from "@sanity/client"
 
 export type Metadata = {
     orderNumber: string;
@@ -16,12 +18,21 @@ export type GroupedBasketItem = {
     quantity: number;
 };
 
+const sanity = sanityClient({
+    projectId: process.env.SANITY_PROJECT_ID || process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+    dataset: process.env.SANITY_DATASET || process.env.NEXT_PUBLIC_SANITY_DATASET,
+    useCdn: true,
+    token: process.env.SANITY_WRITE_TOKEN,
+});
+
 export async function createCheckoutSession(
     items: BasketItem[],
     metadata: Metadata,
 ) {
     try {
         // Check if any grouped items don't have a price
+        console.log(items);
+        console.log(metadata);
         const itemsWithoutPrice = items.filter((item) => item.product.price === undefined);
         if (itemsWithoutPrice.length > 0) {
             throw new Error("Some items do not have a price");
@@ -64,8 +75,10 @@ export async function createCheckoutSession(
                         name: item.product.name,
                         price: item.product.price,
                         image: item.product.image,
+                        product: item.product._id,
+                        quantity: item.quantity,
                     }))
-                ), // Include products in metadata as a JSON string
+                ),
             },
             mode: "payment",
             allow_promotion_codes: true,
@@ -79,7 +92,7 @@ export async function createCheckoutSession(
                         name: item.product.name || "Unnamed Product",
                         description: `Product ID: ${item.product._id}`,
                         metadata: {
-                            id: item.product._id, // Metadata for the product
+                            id: item.product._id,
                         },
                         images: item.product.image
                             ? [imageUrl(item.product.image).url()]
@@ -91,6 +104,23 @@ export async function createCheckoutSession(
         });
 
         console.log("Stripe Checkout session created:", session.id);
+
+        // Update Sanity with order details
+        await sanity.create({
+            _type: 'order',
+            orderNumber: metadata.orderNumber,
+            customerName: metadata.customerName,
+            customerEmail: metadata.customerEmail,
+            clerkUserId: metadata.clerkUserId,
+            products: items.map((item) => ({
+                _key: uuidv4(), // Generate a unique key for each product
+                name: item.product.name,
+                image: item.product.image,
+                product: item.product._id,
+                quantity: item.quantity,
+            })),
+        });
+
         return session.url;
     } catch (error) {
         console.error("Error creating checkout session:", error);

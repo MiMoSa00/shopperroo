@@ -3,15 +3,16 @@ export function formatCurrency(
     currencyCode: string = "USD",
 ): string {
     try {
+        // Ensure currencyCode is not null or undefined
+        const validCurrencyCode = currencyCode ? currencyCode.toUpperCase() : "USD";
+        
         return new Intl.NumberFormat("en-US", {
             style: "currency",
-            currency: currencyCode.toUpperCase(),
+            currency: validCurrencyCode,
         }).format(amount);
     } catch (error) {
-        // fallbacck formatting if currency code is invalid
-        console.error("Invalid currency code: ", currencyCode,
-            error
-        );
-        return `${currencyCode.toUpperCase()} ${amount.toFixed(2)}`;
+        // Fallback formatting if currency code is invalid
+        console.error("Invalid currency code: ", currencyCode, error);
+        return `${currencyCode ? currencyCode.toUpperCase() : "USD"} ${amount.toFixed(2)}`;
     }
 }

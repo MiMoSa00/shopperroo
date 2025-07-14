@@ -19,7 +19,7 @@ import {
 import { Category } from "@/sanity.types";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { set } from "sanity";
+// import { set } from "sanity";
 
 interface CategorySelectorProps {
     categories: Category[];

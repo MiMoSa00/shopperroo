@@ -5,6 +5,26 @@ import { auth } from "@clerk/nextjs/server";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
+interface Order {
+  orderNumber: string;
+  orderDate: string;
+  status: string;
+  totalPrice: number;
+  currency: string;
+  amountDiscount?: number;
+  products?: Product[];
+}
+
+interface Product {
+  product: {
+    _id: string;
+    name: string;
+    price: number;
+    image?: string;
+  };
+  quantity: number;
+}
+
 async function Orders() {
   const { userId } = await auth();
 
@@ -13,28 +33,25 @@ async function Orders() {
   }
 
   const orders = await getMyOrders(userId);
-
-  console.log("Fetched orders:", orders); // Debugging
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4">
-      <div className="bg-white p-4 sm:p-8 rounded-xl shadow-lg w-full max-w-full">
-        <h1 className="text-4xl font-bold text-gray-800 tracking-tight mb-8">
+      <div className="bg-white p-4 sm:p-8 rounded-xl shadow-lg w-full max-w-4xl">
+        <h1 className="text-4xl font-bold text-gray-900 tracking-tight mb-8">
           My Orders
         </h1>
 
         {orders.length === 0 ? (
           <div className="text-center text-gray-600">
-            <p>You have not placed any orders yet.</p>
+            <p>You have not placed any order yet.</p>
           </div>
         ) : (
           <div className="space-y-6 sm:space-y-8">
-            {orders.map((order) => (
+            {orders.map((order: Order) => (
               <div
                 key={order.orderNumber}
                 className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden"
               >
-                <div className="p-4 sm:p-6 border-b border-gray-300">
+                <div className="p-4 sm:p-6 border-b border-gray-200">
                   <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-4">
                     <div>
                       <p className="text-sm text-gray-500 mb-1 font-bold">
@@ -45,38 +62,37 @@ async function Orders() {
                       </p>
                     </div>
                     <div className="sm:text-right">
-                      <p className="text-sm text-gray-600 mb-1">Order Date</p>
-                      <p className="font-medium">
-                        {order.orderDate
-                          ? new Date(order.orderDate).toLocaleDateString()
-                          : "N/A"}
-                      </p>
-                    </div>
+  <p className="text-sm text-gray-600 mb-1">Order Date</p>
+  <p className="font-medium">
+    {order.orderDate && !isNaN(new Date(order.orderDate).getTime())
+      ? new Date(order.orderDate).toLocaleDateString()
+      : "Date not available"}
+  </p>
+</div>
                   </div>
 
                   <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
                     <div className="flex items-center">
-                      <span className="text-sm mr-3">Status</span>
+                      <span className="text-sm mr-2">Status:</span>
                       <span
                         className={`px-3 py-1 rounded-full text-sm ${
                           order.status === "paid"
                             ? "bg-green-200 text-green-800"
-                            : "bg-gray-200 text-gray-800"
+                            : "bg-gray-100 text-gray-800"
                         }`}
                       >
                         {order.status}
                       </span>
                     </div>
                     <div className="sm:text-right">
-                      <p className="text-sm text-gray-700 mb-1">Total Amount</p>
+                      <p className="text0sm text-gray-600 mb-1">Total Amount</p>
                       <p className="font-bold text-lg">
                         {formatCurrency(order.totalPrice ?? 0, order.currency)}
                       </p>
                     </div>
                   </div>
-
                   {order.amountDiscount ? (
-                    <div className="mt-6 p-3 sm:p-4 bg-red-100 rounded-lg">
+                    <div className="mt-4 p-3 sm:p-4 bg-red-50 rounded-lg">
                       <p className="text-red-600 font-medium mb-1 text-sm sm:text-base">
                         Discount Applied:{" "}
                         {formatCurrency(order.amountDiscount, order.currency)}
@@ -95,14 +111,10 @@ async function Orders() {
                   <p className="text-sm font-semibold text-gray-600 mb-3 sm:mb-4">
                     Order Items
                   </p>
-                  <div className="space-y-4 sm:space-y-4">
-                    {order.products?.map((product) => (
+                  <div className="space-y-3 sm:space-y-4">
+                    {order.products?.map((product: Product) => (
                       <div
-                        key={
-                          product.product?.name ??
-                          product.product?.price ??
-                          Math.random()
-                        }
+                        key={product.product._id}
                         className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-2 border-b last:border-b-0"
                       >
                         <div className="flex items-center gap-3 sm:gap-4">
@@ -116,12 +128,23 @@ async function Orders() {
                               />
                             </div>
                           )}
-                          <p className="text-sm font-medium">
-                            {product.product?.name ?? "Unnamed Product"}
-                          </p>
+
+                          <div>
+                            <p className="font-medium text-sm sm:text-base">
+                              {product.product?.name}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Quantity: {product.quantity ?? "N/A"}
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-sm text-gray-600">
-                          {formatCurrency(product.product?.price ?? 0, order.currency)}
+                        <p className="font-medium text-right">
+                          {product.product?.price && product.quantity
+                            ? formatCurrency(
+                                product.product.price * product.quantity,
+                                order.currency
+                              )
+                            : "N/A"}
                         </p>
                       </div>
                     ))}

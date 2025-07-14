@@ -4,8 +4,8 @@ import useBasketStore from "@/store/store";
 import { Product } from "@/sanity.types";
 import { useEffect, useState } from "react";
 
-interface AddToBasketButtonProps {
-    product: Product;
+interface AddToBasketButtonProps{
+    product: Product; 
     disabled: boolean;
 }
 
