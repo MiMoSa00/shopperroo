@@ -1,30 +1,24 @@
-
-// Before using it, import and render "<SanityLive />" in your layout, see
-// https://github.com/sanity-io/next-sanity#live-content-api for more information.
-// import { defineLive } from "next-sanity";
-// import { client } from './client'
-
-// export const { sanityFetch, SanityLive } = defineLive({ 
-//   client: client.withConfig({ 
-    // Live content is currently only available on the experimental API
-    // https://www.sanity.io/docs/api-versioning
-//     apiVersion: 'vX' 
-//   }) 
-// });
-
 import "server-only";
 import { defineLive } from "next-sanity";
-import { client } from './client'
-
-// viewer token
+import { createClient } from '@sanity/client';
 
 const token = process.env.SANITY_API_TOKEN;
-if(!token) {
-  throw new Error("Missing  SANITY_API_TOKEN");
+if (!token) {
+  throw new Error("Missing SANITY_API_TOKEN");
 }
 
+// Create a fresh client instance specifically for live functionality
+const liveClient = createClient({
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
+  apiVersion: '2023-05-03',
+  useCdn: false,
+  token,
+});
+
 export const { sanityFetch, SanityLive } = defineLive({
-  client,
+  // @ts-expect-error - Type conflict between different @sanity/client versions
+  client: liveClient,
   serverToken: token,
   browserToken: token,
   fetchOptions: {

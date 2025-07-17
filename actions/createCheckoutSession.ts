@@ -3,8 +3,8 @@
 import { imageUrl } from "@/lib/imageUrl";
 import stripe from "@/lib/stripe";
 import { BasketItem } from "@/store/store";
-import { v4 as uuidv4 } from 'uuid'; // Import UUID for unique keys
-import sanityClient from "@sanity/client"
+import { v4 as uuidv4 } from 'uuid';
+import sanityClient from "@sanity/client";
 
 export type Metadata = {
     orderNumber: string;
@@ -28,11 +28,12 @@ const sanity = sanityClient({
 export async function createCheckoutSession(
     items: BasketItem[],
     metadata: Metadata,
-) {
+): Promise<string | null> {
     try {
         // Check if any grouped items don't have a price
         console.log(items);
         console.log(metadata);
+        
         const itemsWithoutPrice = items.filter((item) => item.product.price === undefined);
         if (itemsWithoutPrice.length > 0) {
             throw new Error("Some items do not have a price");
@@ -59,6 +60,11 @@ export async function createCheckoutSession(
 
         const successUrl = `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}&orderNumber=${metadata.orderNumber}`;
         const cancelUrl = `${baseUrl}/basket`;
+
+        // Calculate total price
+        const totalPrice = items.reduce((total, item) => {
+            return total + ((item.product.price ?? 0) * item.quantity);
+        }, 0);
 
         // Create the Stripe Checkout session
         const session = await stripe.checkout.sessions.create({
@@ -105,21 +111,27 @@ export async function createCheckoutSession(
 
         console.log("Stripe Checkout session created:", session.id);
 
-        // Update Sanity with order details
-        await sanity.create({
+        // Create order in Sanity with all required fields
+        const orderData = {
             _type: 'order',
             orderNumber: metadata.orderNumber,
             customerName: metadata.customerName,
-            customerEmail: metadata.customerEmail,
+            customerEmail: metadata.customerEmail, // Keep consistent with field name
             clerkUserId: metadata.clerkUserId,
+            orderDate: new Date().toISOString(), // Add the missing orderDate
+            status: 'pending', // Initial status
+            totalPrice: totalPrice,
+            currency: 'usd',
             products: items.map((item) => ({
-                _key: uuidv4(), // Generate a unique key for each product
+                _key: uuidv4(),
                 name: item.product.name,
                 image: item.product.image,
                 product: item.product._id,
                 quantity: item.quantity,
             })),
-        });
+        };
+
+        await sanity.create(orderData);
 
         return session.url;
     } catch (error) {

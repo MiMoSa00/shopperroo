@@ -30,11 +30,11 @@ interface Order {
   amountDiscount?: number;
   clerkUserId: string;
   customerName: string;
-  email: string;
+  customerEmail: string; // Changed from 'email' to 'customerEmail'
   products: Product[];
 }
 
-export async function getMyOrders(userId: string) {
+export async function getMyOrders(userId: string): Promise<Order[]> {
   if (!userId) {
     throw new Error("User ID is required.");
   }
@@ -53,7 +53,7 @@ export async function getMyOrders(userId: string) {
       amountDiscount,
       clerkUserId,
       customerName,
-      email,
+      customerEmail,
       products[] {
         _key,
         quantity,
