@@ -31,8 +31,8 @@ function BasketPage() {
   if (groupedItems.length === 0) {
     return (
       <div className="container mx-auto p-4 flex flex-col items-center justify-center min-h-[50vh]">
-        <h1 className="text-2xl font-bold mb-6 text-gray-800">Your basket</h1>
-        <p className="text-gray-500 text-lg">Your basket is empty.</p>
+        <h1 className="text-2xl font-bold mb-6 text-foreground">Your basket</h1>
+        <p className="text-muted-foreground text-lg">Your basket is empty.</p>
       </div>
     );
   }
@@ -62,12 +62,12 @@ function BasketPage() {
   };
 
   return (
-    <div className="container mx-auto p-4 max-w-full">
-      <h1 className="text-2xl font-bold mb-4">Your Basket</h1>
+    <div className="container mx-auto p-4 max-w-full bg-background">
+      <h1 className="text-2xl font-bold mb-4 text-foreground">Your Basket</h1>
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="flex-grow">
           {groupedItems?.map((item) => (
-            <div key={item.product._id} className="mb-4 p-4 border rounded flex items-center">
+            <div key={item.product._id} className="mb-4 p-4 border border-border rounded bg-card text-card-foreground flex items-center">
               <div
                 className="flex items-center cursor-pointer flex-1 min-w-0"
                 onClick={() => router.push(`/product/${item.product.slug?.current}`)}
@@ -82,14 +82,14 @@ function BasketPage() {
                       height={96}
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-200 rounded">
-                      <span className="text-xs text-gray-500">No Image</span>
+                    <div className="w-full h-full flex items-center justify-center bg-muted rounded">
+                      <span className="text-xs text-muted-foreground">No Image</span>
                     </div>
                   )}
                 </div>
                 <div className="min-w-0">
-                  <h2 className="text-lg sm:text-xl font-semibold truncate">{item.product.name}</h2>
-                  <p className="text-sm sm:text-base">
+                  <h2 className="text-lg sm:text-xl font-semibold truncate text-foreground">{item.product.name}</h2>
+                  <p className="text-sm sm:text-base text-muted-foreground">
                     Price: ${((item.product.price ?? 0) * item.quantity).toFixed(2)}
                   </p>
                 </div>
@@ -101,14 +101,14 @@ function BasketPage() {
           ))}
         </div>
 
-        <div className="w-full lg:w-80 lg:sticky lg:top-4 h-fit bg-white p-4 border rounded order-first lg:order-last fixed bottom-0 left-0 lg:left-auto">
-          <h3 className="text-xl font-semibold">Order Summary</h3>
+        <div className="w-full lg:w-80 lg:sticky lg:top-4 h-fit bg-card text-card-foreground p-4 border border-border rounded order-first lg:order-last fixed bottom-0 left-0 lg:left-auto">
+          <h3 className="text-xl font-semibold text-foreground">Order Summary</h3>
           <div className="mt-4 space-y-2">
-            <p className="flex justify-between">
+            <p className="flex justify-between text-foreground">
               <span>Items:</span>
               <span>{groupedItems.reduce((total, item) => total + item.quantity, 0)}</span>
             </p>
-            <p className="flex justify-between text-2xl font-bold border-t mt-2">
+            <p className="flex justify-between text-2xl font-bold border-t border-border mt-2 pt-2 text-foreground">
               <span>Total:</span>
               <span>${useBasketStore.getState().getTotalPrice().toFixed(2)}</span>
             </p>
@@ -118,13 +118,13 @@ function BasketPage() {
             <button
               onClick={handleCheckout}
               disabled={isLoading}
-              className="mt-4 w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-900 disabled:bg-gray-400"
+              className="mt-4 w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
             >
               {isLoading ? "Processing..." : "Checkout"}
             </button>
           ) : (
             <SignInButton mode="modal">
-              <button className="mt-4 w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+              <button className="mt-4 w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
                 Sign in to Checkout
               </button>
             </SignInButton>

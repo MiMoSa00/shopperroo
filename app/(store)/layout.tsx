@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
-
 import "../globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import Header from "@/components/ui/Header";
 import { SanityLive } from "@/sanity/lib/live";
 import { VisualEditing } from "next-sanity";
 import { draftMode } from "next/headers";
 import { DisableDraftMode } from "@/components/DisableDraftMode";
-
-
+import { ThemeProvider } from "next-themes";
+import Header from "@/components/ui/Header";
+import ThemeHydrationFix from "@/components/ThemeHydrationFix";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,23 +20,27 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider dynamic>
-    <html lang="en">
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>
+        <ClerkProvider dynamic>
+  <ThemeHydrationFix>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
       {((await draftMode()).isEnabled && (
         <>
-        <DisableDraftMode />
-        <VisualEditing />
+          <DisableDraftMode />
+          <VisualEditing />
         </>
       ))}
-        <main>
-          <Header />
-        {children}
-        </main>
-      
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1">{children}</main>
+      </div>
       <SanityLive />
+    </ThemeProvider>
+  </ThemeHydrationFix>
+</ClerkProvider>
+
       </body>
     </html>
-    </ClerkProvider>
   );
 }

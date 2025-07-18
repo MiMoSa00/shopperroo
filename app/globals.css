@@ -69,4 +69,18 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+    html {
+    @apply h-full;
+  }
+  body {
+    @apply h-full min-h-screen transition-colors duration-300;
+  }
+  /* Prevent flash of unstyled content */
+  html.dark {
+    color-scheme: dark;
+  }
+  
+  html.light {
+    color-scheme: light;
+  }
 }
