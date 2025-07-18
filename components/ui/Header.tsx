@@ -1,9 +1,8 @@
-// components/ui/Header.tsx
-"use client"
+"use client";
 
 import { ClerkLoaded, SignedIn, SignInButton, UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
-import Form from "next/form"
+import Form from "next/form";
 import { PackageIcon, TrolleyIcon } from "@sanity/icons";
 import useBasketStore from "@/store/store";
 import ThemeToggle from '../ThemeToggle';
@@ -42,13 +41,13 @@ function Header() {
                     />
                 </Form>
 
-                <div className="flex items-center space-x-4 mt-4 sm:mt-0 flex-1 sm:flex-none">
+                <div className="flex items-center space-x-2 mt-4 sm:mt-0 flex-1 sm:flex-none">
                     {/* Theme Toggle */}
                     <ThemeToggle />
 
                     <Link href='/basket'
-                        className="flex-1 relative flex justify-center sm:justify-start sm:flex-none items-center space-x-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
-                        <TrolleyIcon className="w-6 h-6" />
+                        className="flex-1 relative flex justify-center sm:justify-start sm:flex-none items-center space-x-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 sm:px-4 rounded transition-colors duration-200 text-xs sm:text-sm md:text-base">
+                        <TrolleyIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                         <span className="absolute -top-2 -right-2 bg-red-400 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">{itemCount}</span>
                         <span>My Basket</span>
                     </Link>
@@ -57,8 +56,8 @@ function Header() {
                     <ClerkLoaded>
                         <SignedIn>
                             <Link href="/orders"
-                                className="flex-1 relative flex justify-center sm:justify-start sm:flex-none items-center space-x-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
-                                <PackageIcon className="w-6 h-6" />
+                                className="flex-1 relative flex justify-center sm:justify-start sm:flex-none items-center space-x-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 sm:px-4 rounded transition-colors duration-200 text-xs sm:text-sm md:text-base">
+                                <PackageIcon className="w-5 h-5 sm:w-6 sm:h-6" />
                                 <span>My Orders</span>
                             </Link>
                         </SignedIn>  
@@ -78,7 +77,7 @@ function Header() {
                         {user?.passkeys.length === 0 && (
                             <button 
                                 onClick={createClerkPasskey}
-                                className="bg-white dark:bg-gray-800 hover:bg-blue-700 hover:text-white animate-pulse text-blue-500 dark:text-blue-400 font-bold py-2 px-4 rounded border-blue-300 dark:border-blue-600 border transition-colors duration-200">
+                                className="bg-white dark:bg-gray-800 hover:bg-blue-700 hover:text-white animate-pulse text-blue-500 dark:text-blue-400 font-bold py-2 px-2 sm:px-4 rounded border-blue-300 dark:border-blue-600 border transition-colors duration-200 text-xs sm:text-sm md:text-base">
                                 Create passkey
                             </button>
                         )}                
@@ -89,4 +88,4 @@ function Header() {
     )
 }
 
-export default Header
+export default Header;
