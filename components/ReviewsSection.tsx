@@ -18,7 +18,7 @@ interface ReviewsSectionProps {
 
 const ReviewsSection = ({ productId }: ReviewsSectionProps) => {
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [newReview, setNewReview] = useState({ rating: 5, comment: "", username: "" });
+  const [newReview, setNewReview] = useState({ rating: 0, comment: "", username: "" });
   const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -48,7 +48,7 @@ const ReviewsSection = ({ productId }: ReviewsSectionProps) => {
     };
 
     setReviews(prev => [review, ...prev]);
-    setNewReview({ rating: 5, comment: "", username: "" });
+    setNewReview({ rating: 0, comment: "", username: "" });
     setLoading(false);
   };
 
@@ -109,7 +109,7 @@ const ReviewsSection = ({ productId }: ReviewsSectionProps) => {
     : "0";
 
   return (
-    <div className="mt-12 bg-card text-card-foreground p-6 rounded-lg border border-border">
+    <div className="mt-12 bg-card text-card-foreground p-6 rounded-lg border border-border overflow-hidden">
       <div className="mb-8">
         <h2 className="text-2xl font-bold mb-4 text-foreground">Customer Reviews</h2>
         {reviews.length > 0 && (
@@ -202,7 +202,7 @@ const ReviewsSection = ({ productId }: ReviewsSectionProps) => {
                       required
                     />
                   </div>
-                  <div className="flex space-x-2">
+                  <div className="flex flex-col space-y-2">
                     <Button 
                       type="submit" 
                       disabled={loading}
@@ -223,12 +223,12 @@ const ReviewsSection = ({ productId }: ReviewsSectionProps) => {
               ) : (
                 // Review Display
                 <div>
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2">
                     <div className="flex items-center space-x-3">
                       <span className="font-semibold text-foreground">{review.username}</span>
                       <StarRating rating={review.rating} readonly />
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-row items-center space-x-2 mt-2 sm:mt-0">
                       <span className="text-sm text-muted-foreground">
                         {new Date(review.date).toLocaleDateString()}
                         {review.updatedAt && " (edited)"}
