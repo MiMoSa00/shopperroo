@@ -5,7 +5,7 @@ import { SanityLive } from "@/sanity/lib/live";
 import { VisualEditing } from "next-sanity";
 import { draftMode } from "next/headers";
 import { DisableDraftMode } from "@/components/DisableDraftMode";
-import { ThemeProvider } from "next-themes";
+// import { ThemeProvider } from "next-themes";
 import Header from "@/components/ui/Header";
 import ThemeHydrationFix from "@/components/ThemeHydrationFix";
 
@@ -24,7 +24,7 @@ export default async function RootLayout({
       <body suppressHydrationWarning>
         <ClerkProvider dynamic>
   <ThemeHydrationFix>
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+    {/* <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange> */}
       {((await draftMode()).isEnabled && (
         <>
           <DisableDraftMode />
@@ -36,7 +36,7 @@ export default async function RootLayout({
         <main className="flex-1">{children}</main>
       </div>
       <SanityLive />
-    </ThemeProvider>
+    {/* </ThemeProvider> */}
   </ThemeHydrationFix>
 </ClerkProvider>
 
